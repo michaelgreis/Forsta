@@ -6,6 +6,7 @@ class ForstaParser():
 
 	def parse(self,query):
 		query_record = {}
+<<<<<<< HEAD
 		return query_record		return query_record
 
 	#This function is used to read the logs in from a specific directory.
@@ -34,3 +35,20 @@ class ForstaParser():
 			total_line_count+=1 #count of total lines read
 		print('List of ' + total_line_count + ' has been cleaned to ' + clean_count + ' for lines containing the following values: ' + cleaning_values) # outputs log
 		return clean_list[]
+=======
+		parseResults = sp.select_stmt.parseString(query)
+		# print(parseResults)
+		# print(parseResults.dump())
+		# print(type(parseResults["from"]))
+		print(parseResults.items)
+		self.get_tables(parseResults)
+		return query_record
+
+	def get_tables(self,parseResults):
+		from_clause = parseResults["from"]
+		print(from_clause.items)
+		for x in from_clause:
+			
+			print(x)
+			print(type(x))
+>>>>>>> origin/master

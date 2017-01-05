@@ -125,7 +125,7 @@ tests = """\
     select * from (select * from kill_floor.nytimeslocations limit 20) location_count inner join (select * from kill_floor.country_information limit 20) ctry_info on location_count.country = location_count.country;
     """
 
-print(type(select_stmt))
-results = select_stmt.parseString("SELECT * FROM kill_floor.aiddata3_0 aid_data INNER JOIN kill_floor.nytimeslocations location_count on aid_data.recipient_iso2 = location_count.country;")
+#print(type(select_stmt))
+#results = select_stmt.parseString("SELECT * FROM kill_floor.aiddata3_0 aid_data INNER JOIN kill_floor.nytimeslocations location_count on aid_data.recipient_iso2 = location_count.country;")
 #select_stmt.runTests(tests)
-print(results.dump())
+#print(results.dump())
