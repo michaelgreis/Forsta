@@ -1,13 +1,11 @@
 from . import select_parser as sp
 import os #needed for os function read_logs
 
-
+<<<<<<< HEAD
 class ForstaParser():
-
 	def parse(self,query):
 		query_record = {}
-<<<<<<< HEAD
-		return query_record		return query_record
+		return query_record
 
 	#This function is used to read the logs in from a specific directory.
 	def read_logs(filepath):
