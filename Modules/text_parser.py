@@ -52,6 +52,11 @@ for index, values in enumerate(input_lines):
 
 df_input_words = pd.DataFrame(input_words, columns=list(['log_entry', 'word']))
 
+
+df_input_words_grouped = df_input_words.groupby(['log_entry','word']).sum()
+
+print(df_input_words)
+
 #outputting to a test file
 f_test = open('../Dev_Space/testing.txt','w')
 test_data = df_input_words
