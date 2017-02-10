@@ -2,7 +2,9 @@ import os #needed for os function read_logs
 import pandas as pd #needed for the dataframe read in
 
 
-class ForstaParser():
+class parser():
+	def __init__(self):
+		self.x = 'Hello'
 
 	#This function is used to read the logs in from a specific directory.
 	def read_logs(filepath):
