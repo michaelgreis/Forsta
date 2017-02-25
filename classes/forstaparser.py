@@ -42,3 +42,19 @@ class parser():
 					input_words.append([index,specific_word]) #appending to the input word with the index for the word
 		df_input_words = pd.DataFrame(input_words,columns=list(['log_entry', 'word']))
 		return(df_input_words)
+
+	def wordcount(df_input): #this function expects to receive a datframe with "log_entry" and "word" columns
+		print('Counting Words.')
+		df_input = df_input[['log_entry','word']].groupby(['log_entry','word']).size().reset_index(name="mentions")
+		print('Words Counted.')
+		return df_input
+
+	def pivot_data(df_input):
+		print('Data pivoting.')
+		df_input = df_input.pivot(index='log_entry',columns='word',values='mentions').fillna(0)
+		print('Data pivoted.')
+		return df_input
+
+	def word_relationship(df_input):
+		word_matrix = df_input.as_matrix()
+		print(word_matrix)
