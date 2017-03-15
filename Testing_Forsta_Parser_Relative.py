@@ -11,20 +11,18 @@ cleaning_values.append(':LOG:  statement: ')
 #this defines the split value that is used in clean_input_list
 sql_log_split = ':LOG:  statement: '
 
-logs = fp.parser()
 
-logs.read_logs('Sample_Data_Generation/Sample_Data/')
+logs_input = fp.parser.read_logs('Sample_Data_Generation/Sample_Data/')
 
 #print(logs_input)
 
 print('Logs Read.')
 
-logs.clean_input_list(cleaning_values,sql_log_split)
+logs_input = fp.parser.clean_input_list(cleaning_values,logs_input,sql_log_split)
 
 print('Logs Cleaned.')
 
-
-print(logs.clean_list)
+print(logs_input)
 
 #dataframe = fp.parser.reading_into_dataframe(logs_input)
 
