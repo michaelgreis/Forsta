@@ -19,12 +19,24 @@ logs.read_logs('Sample_Data_Generation/Sample_Data/')
 
 print('Logs Read.')
 
-logs.clean_input_list(cleaning_values,sql_log_split)
+logs.clean_input_logs(cleaning_values,sql_log_split)
 
 print('Logs Cleaned.')
 
 
-print(logs.clean_list)
+print(logs.clean_logs)
+
+logs.dedupe_input_logs()
+
+print(logs.dedup_logs)
+
+print('\n')
+
+print(logs.extract_JSON()) #tests that default return all works
+
+print('\n')
+
+print(logs.extract_JSON(2)) #test to make sure that return n entrys works.
 
 #dataframe = fp.parser.reading_into_dataframe(logs_input)
 

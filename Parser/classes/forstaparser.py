@@ -1,18 +1,16 @@
 import os #needed for os function read_logs
-#import pandas as pd #needed for the dataframe read in
 import time as time
-
+from collections import Counter
+import json
+from itertools import islice
 
 class parser():
  #initalizing
  def __init__(self):
   self.input = []
-  self.clean_list = []
+  self.clean_logs = []
+  self.dedup_logs = {}
 
-
- #this is the function to get the logs in the class
- #def get_clean_list(self):
- # print(self.clean_list)
 
  #This function is used to read the logs in from a specific directory.
  def read_logs(self,filepath):
@@ -24,49 +22,44 @@ class parser():
      self.input.append(line)
    print(filename + ' in directory ' + filepath + ' has been recorded successfully brother.') # message for log
   print(time.time())
-  #self.input = input_lines
-  
-  #return input_lines
+
 
  #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
  # Specifically, you pass the values you WANT to include
  #Split value = the value you want to grab everything after. AKA don't preserver all the standard gobbly gook before the SQL statement.
- def clean_input_list(self,cleaning_values,split_value):
+ def clean_input_logs(self,cleaning_values,split_value):
   total_line_count = 0
   clean_count = 0
 
   for line in self.input: #iterating through the lines
    if any(word in line for word in cleaning_values) == True: # iterating through the cleaning list
-    #if line.upper().find(sterilization_values.upper())>=0: #this checks if there is a sterilization value in the string.
     line = line.upper().partition(split_value.upper())[2]
-    self.clean_list.append(line)
+    self.clean_logs.append(line)
     clean_count+=1 # count of lines cleaned
-    # break # if one of the values is found, it returns the line.
    total_line_count+=1 #count of total lines read
   print('List of ' + str(total_line_count) + ' has been cleaned to ' + str(clean_count) + ' for lines containing the following values: ' + str(cleaning_values)) # outputs log
 
+#The purpose of this counter is to load the dictionary along with the line count.
+ def dedupe_input_logs(self):
+  if len(self.clean_logs) > 0: 
+   self.dedup_logs = dict(Counter(self.clean_logs))
+   print('clean_list has been loaded into the dedup_list.')
+  else:
+   self.dedup_logs = dict(Counter(self.input))
+   print ('input has been loaded into the dedup_list.')
 
-#def reading_into_dataframe(input_array):
-#		input_words = [] # this is used to input all of the words that are codes
-#		for index, values in enumerate(input_array):
-#			for word in values.split(): #splitting by the space
-#				for specific_word in word.split('='): #splitting by equal sign
-#					input_words.append([index,specific_word]) #appending to the input word with the index for the word
-#		df_input_words = pd.DataFrame(input_words,columns=list(['log_entry', 'word']))
-#		return(df_input_words)
+#this function is used to return the data in a JSON format.
+ def extract_JSON(self,output_lines=-1):
+  output_json = [] #this is the final list that contains the data to be output
+  output_counter = 0
 
-#	def wordcount(df_input): #this function expects to receive a datframe with "log_entry" and "word" columns
-#		print('Counting Words.')
-#		df_input = df_input[['log_entry','word']].groupby(['log_entry','word']).size().reset_index(name="mentions")
-#		print('Words Counted.')
-#		return df_input
-
-#	def pivot_data(df_input):
-#		print('Data pivoting.')
-#		df_input = df_input.pivot(index='log_entry',columns='word',values='mentions').fillna(0)
-#		print('Data pivoted.')
-#		return df_input
-
-#	def word_relationship(df_input):
-#		word_matrix = df_input.as_matrix()
-#		print(word_matrix)
+  if output_lines==-1:
+   for key,value in self.dedup_logs.items():
+    output_json.append({'SQL': key ,'Count':value})
+   return json.dumps(output_json)
+  else:
+   for key,value in self.dedup_logs.items():
+    output_counter+=1
+    if output_counter <= output_lines:
+     output_json.append({'SQL': key ,'Count':value})
+   return json.dumps(output_json)
