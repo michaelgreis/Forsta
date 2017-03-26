@@ -13,7 +13,7 @@ sql_log_split = ':LOG:  statement: '
 
 logs = fp.parser()
 
-logs.read_logs('Sample_Data_Generation/Sample_Data/')
+logs.read_logs('../tests/Sample_Data_Generation/Sample_Data/')
 
 #print(logs_input)
 
