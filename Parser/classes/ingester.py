@@ -28,6 +28,20 @@ class ingester():
 #  print(time.time())
 #  s3 = boto3.client('s3')
 
-#convert file types to readable data
- def unpack(self,bucket_name,file_name,source_type,target_type):
-   bucket_name
+# Read data file from S3 location
+# Unpack/Unzip into JSON
+# Load to landing bucket location
+ def copy_load(self,source_bucket,object_key,target_bucket):
+   copy_source = {
+    'Bucket' : source_bucket,
+    'Key' : object_key
+   }
+   #!!!!!!!!!!!!ISSUE HERE. S3 DOESN'T EXIST!!!!
+   s3 = boto3.resource('s3')
+   landing_bucket = s3.Bucket(target_bucket)
+   try:
+    landing_bucket.copy(copy_source, object_key + str(time.time()))
+   except Exception as ex:
+    print(ex)
+   else:
+    print('Success!')
