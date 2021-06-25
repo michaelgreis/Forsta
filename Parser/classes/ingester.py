@@ -1,5 +1,8 @@
 import boto3
 import time as time
+import gzip
+import json
+from io import BytesIO
 
 class ingester():
  #def __init__(self):
@@ -31,17 +34,30 @@ class ingester():
 # Read data file from S3 location
 # Unpack/Unzip into JSON
 # Load to landing bucket location
- def copy_load(self,source_bucket,object_key,target_bucket):
+ def copy_object(self,source_bucket,object_key,target_bucket):
+   target_object = object_key + str(time.time())
    copy_source = {
     'Bucket' : source_bucket,
     'Key' : object_key
    }
-   #!!!!!!!!!!!!ISSUE HERE. S3 DOESN'T EXIST!!!!
    s3 = boto3.resource('s3')
    landing_bucket = s3.Bucket(target_bucket)
    try:
-    landing_bucket.copy(copy_source, object_key + str(time.time()))
+    landing_bucket.copy(copy_source, target_object)
    except Exception as ex:
     print(ex)
    else:
-    print('Success!')
+    print('Success! Object loaded to: ' + target_object)
+    return (target_object)
+
+# turns the data contained in the s3 gzip compressed file to text document
+ def convert_object(self,target_bucket,target_key):
+   data = []
+   s3_client = boto3.client('s3')
+   read_object = s3_client.get_object(
+     Bucket = target_bucket,
+     Key = target_key
+   )
+   read_byte_object = BytesIO(read_object['Body'].read()) 
+   raw_data = gzip.GzipFile(None, 'rb', fileobj=read_byte_object).read().decode('ASCII') #.decode('utf-8')
+   s3_client.put_object(Body=raw_data, Bucket=target_bucket,Key=target_key[target_key.rindex('/')+1:] + str(time.time())+'.txt')

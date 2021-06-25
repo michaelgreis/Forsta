@@ -10,4 +10,7 @@ t_ing = ing.ingester()
 t_ing.s3_list_buckets()
 
 #Copy files
-t_ing.copy_load(source_bucket,object_key,target_bucket)
+output_file = t_ing.copy_object(source_bucket,object_key,target_bucket)
+print(output_file)
+
+t_ing.convert_object(target_bucket,output_file)
