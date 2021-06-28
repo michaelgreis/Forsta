@@ -26,11 +26,6 @@ class ingester():
     # file_name = objs_contents[i]['Key']
     # print(file_name)
 
-#download all the files in the s3 bucket - Deprecated
-# def s3_read(self,bucket_name,object_name,file_name):
-#  print(time.time())
-#  s3 = boto3.client('s3')
-
 # Read data file from S3 location
 # Unpack/Unzip into JSON
 # Load to landing bucket location

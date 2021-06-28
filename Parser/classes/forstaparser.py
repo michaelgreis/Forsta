@@ -3,29 +3,40 @@ import time as time
 from collections import Counter
 import json
 from itertools import islice
+import boto3
+import re
 
-class parser():
+class parser:
  #initalizing
  def __init__(self):
-  self.input = []
   self.clean_logs = []
   self.dedup_logs = {}
+  pass
 
 
  #This function is used to read the logs in from a specific directory.
- def read_logs(self,filepath):
-  input_lines=[]
-  print(time.time())
-  for filename in os.listdir(filepath): #read all files in directory
-   with open(filepath+filename,'r') as file:
-    for line in file: #read in all lines for a file 
-     self.input.append(line)
-   print(filename + ' in directory ' + filepath + ' has been recorded successfully brother.') # message for log
-  print(time.time())
-
+ def read_logs(self,source_type,target_bucket,target_key):
+  input = []
+  if source_type == 'local':
+    for filename in os.listdir(filepath): #read all files in directory
+     with open(filepath+filename,'r') as file:
+      for line in file: #read in all lines for a file 
+       self.input.append(line)
+     print(filename + ' in directory ' + filepath + ' has been recorded successfully brother.') # message for log
+    return (input)
+  elif source_type == 's3':
+    s3 = boto3.resource('s3')
+    read_object = s3.Object(target_bucket,target_key)
+    data = read_object.get()['Body'].read().decode('ASCII') 
+    print(data)
+    print(re.split("}\n{",data))
+    #need to run through the list and clean up the formatting. Is there a more elegant way to handle this?
+    return input
+  else:
+    print(source_type + ' is invalid. Must be source_type = \'local\' or \'s3\'.') 
 
  #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
- # Specifically, you pass the values you WANT to include
+ #Specifically, you pass the values you WANT to include
  #Split value = the value you want to grab everything after. AKA don't preserver all the standard gobbly gook before the SQL statement.
  def clean_input_logs(self,cleaning_values,split_value):
   total_line_count = 0
