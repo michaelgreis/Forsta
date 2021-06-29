@@ -4,6 +4,7 @@ from collections import Counter
 import json
 from itertools import islice
 import boto3
+import io
 import re
 
 class parser:
@@ -25,30 +26,28 @@ class parser:
      print(filename + ' in directory ' + filepath + ' has been recorded successfully brother.') # message for log
     return (input)
   elif source_type == 's3':
-    s3 = boto3.resource('s3')
-    read_object = s3.Object(target_bucket,target_key)
-    data = read_object.get()['Body'].read().decode('ASCII') 
-    print(data)
-    print(re.split("}\n{",data))
-    #need to run through the list and clean up the formatting. Is there a more elegant way to handle this?
+    s3_client = boto3.client('s3')
+    read_object = s3_client.get_object(Bucket=target_bucket,Key=target_key)
+    output = io.BytesIO(read_object['Body'].read())
+    output = io.TextIOWrapper(output,'utf-8')
     return input
   else:
     print(source_type + ' is invalid. Must be source_type = \'local\' or \'s3\'.') 
 
- #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
- #Specifically, you pass the values you WANT to include
- #Split value = the value you want to grab everything after. AKA don't preserver all the standard gobbly gook before the SQL statement.
- def clean_input_logs(self,cleaning_values,split_value):
-  total_line_count = 0
-  clean_count = 0
 
-  for line in self.input: #iterating through the lines
-   if any(word in line for word in cleaning_values) == True: # iterating through the cleaning list
-    line = line.upper().partition(split_value.upper())[2]
-    self.clean_logs.append(line)
-    clean_count+=1 # count of lines cleaned
-   total_line_count+=1 #count of total lines read
-  print('List of ' + str(total_line_count) + ' has been cleaned to ' + str(clean_count) + ' for lines containing the following values: ' + str(cleaning_values)) # outputs log
+ #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
+ #Specifically, you pass the values you WANT to filter out
+ #Split value = the value you want to grab everything after. AKA don't preserver all the standard gobbly gook before the SQL statement.
+ #def clean_input_logs(self,cleaning_values,split_value):
+ # total_line_count = 0
+ # clean_count = 0
+ # for line in : #iterating through the lines
+ #  if any(word in line for word in cleaning_values) == True: # iterating through the cleaning list
+ #   line = line.upper().partition(split_value.upper())[2]
+ #   self.clean_logs.append(line)
+ #   clean_count+=1 # count of lines cleaned
+ #  total_line_count+=1 #count of total lines read
+ # print('List of ' + str(total_line_count) + ' has been cleaned to ' + str(clean_count) + ' for lines containing the following values: ' + str(cleaning_values)) # outputs log
 
 #The purpose of this counter is to load the dictionary along with the line count.
  def dedupe_input_logs(self):
