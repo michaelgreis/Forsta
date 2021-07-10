@@ -34,6 +34,7 @@ class parser:
   else:
     print(source_type + ' is invalid. Must be source_type = \'local\' or \'s3\'.') 
 
+  def load_to_dynamo(self,data,)
 
  #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
  #Specifically, you pass the values you WANT to filter out
