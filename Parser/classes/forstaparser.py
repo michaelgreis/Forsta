@@ -1,7 +1,8 @@
 import os #needed for os function read_logs
-import time as time
+import datetime
 from collections import Counter
 import json
+import uuid
 from itertools import islice
 import boto3
 import io
@@ -30,11 +31,28 @@ class parser:
     read_object = s3_client.get_object(Bucket=target_bucket,Key=target_key)
     output = io.BytesIO(read_object['Body'].read())
     output = io.TextIOWrapper(output,'utf-8')
-    return input
+    return output
   else:
     print(source_type + ' is invalid. Must be source_type = \'local\' or \'s3\'.') 
 
-  def load_to_dynamo(self,data,)
+ def dynamo_landing_load(self,table_name,data):
+    dynamodb = boto3.resource('dynamodb',region_name='us-east-1')
+    load_table = dynamodb.Table(table_name)
+    #In order for this to work, the data must be the right format
+    for line in data.readlines():
+      j_line = json.loads(line)
+      #added the UID for PK
+      j_line.update({'uuid': str(uuid.uuid4())})
+      response = load_table.put_item(
+        TableName = table_name,
+        Item={
+          'uuid':str(j_line['uuid']),
+          'upload_date':str(datetime.date.today()),
+          'data':str(j_line)
+        }
+      )
+
+      print(response)
 
  #This function accepts a list of strings (cleaning_values) to filter out irrelevant data from another list of strings (list_to_clean)
  #Specifically, you pass the values you WANT to filter out
