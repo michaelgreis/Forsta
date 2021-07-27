@@ -35,7 +35,7 @@ class parser:
   else:
     print(source_type + ' is invalid. Must be source_type = \'local\' or \'s3\'.') 
 
- def dynamo_landing_load(self,table_name,data):
+ def dynamo_landing_load(self,table_name,data,source):
     dynamodb = boto3.resource('dynamodb',region_name='us-east-1')
     load_table = dynamodb.Table(table_name)
     #In order for this to work, the data must be the right format
@@ -46,9 +46,10 @@ class parser:
       response = load_table.put_item(
         TableName = table_name,
         Item={
-          'uuid':str(j_line['uuid']),
-          'upload_date':str(datetime.date.today()),
-          'data':str(j_line)
+          'uuid': str(j_line['uuid']),
+          'upload_date': str(datetime.date.today()),
+          'data': str(j_line),
+          'source': source
         }
       )
 
