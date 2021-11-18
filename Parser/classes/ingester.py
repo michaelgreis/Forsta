@@ -11,23 +11,24 @@ class ingester():
   for bucket in boto3.resource('s3').buckets.all():
    print(bucket.name)
    response_dict = boto3.client('s3').list_objects(Bucket=bucket.name)
-   print(response_dict.keys())
+   #print(response_dict.keys())
    #ensures bucket has content before trying to pull content info out
    try:
-    response_dict['Contents']
+    for s3_item in response_dict['Contents']:
+     print(s3_item['Key'])
+    #print(response_dict['Name'])
    except:
     print('No objects in ' + bucket.name + ' exist.')
-   else:
-    print(response_dict['Contents']) 
-    objs_contents = response_dict['Contents']
-    print(objs_contents)
+   #else:
+   # print(response_dict['Contents']) 
+   # objs_contents = response_dict['Contents']
+   # print(objs_contents)
     #unnecessary, good for reference
     #for i in range(len(objs_contents)):
     # file_name = objs_contents[i]['Key']
     # print(file_name)
 
 # Read data file from S3 location
-# Unpack/Unzip into JSON
 # Load to landing bucket location
  def copy_object(self,source_bucket,object_key,target_bucket):
    target_object = object_key + str(time.time())
@@ -44,6 +45,28 @@ class ingester():
    else:
     print('Success! Object loaded to: ' + target_object)
     return (target_object)
+
+# Read all files from S3 bucket
+# Load all files to landing bucket location
+ def copy_bucket(self,source_bucket,target_bucket):
+   #setup target location
+   s3 = boto3.resource('s3')
+   landing_bucket = s3.Bucket(target_bucket)
+
+   response_dict = boto3.client('s3').list_objects(Bucket=source_bucket)
+   try:
+     for s3_item in response_dict['Contents']:
+       copy_source = {
+         'Bucket' : source_bucket,
+         'Key' : s3_item['Key']
+       }
+       #only copy non-0 byte files
+       if s3_item['Size'] != 0:
+        landing_bucket.copy(copy_source,(s3_item['Key'] + str(time.time())).replace('/','.'))
+        print('Object ' + s3_item['Key'] + ' copied to ' + target_bucket)
+   except Exception as ex:
+     print(ex)
+
 
 # turns the data contained in the s3 gzip compressed file to text document
  def convert_object(self,target_bucket,target_key):

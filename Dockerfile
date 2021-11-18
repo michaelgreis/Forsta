@@ -6,13 +6,13 @@ RUN yum install zip -y
 RUN yum install unzip -y
 
 #AWS CLI Installation
-#RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-#RUN unzip awscliv2.zip
-#RUN ./aws/install
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
 
 #create working directory
-ADD . /user/src 
-RUN pip3 install boto3 -t /user/src/Forsta/Parser
+ADD . /Forsta
+RUN pip3 install boto3 -t /Forsta/Parser
 
 #v1
 #Pull base image

@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from classes import ingester as ing
 
 #testing configuration
