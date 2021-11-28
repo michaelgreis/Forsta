@@ -70,7 +70,7 @@ class ingester():
 
 # turns the data contained in the s3 gzip compressed file to text document
  def convert_object(self,target_bucket,target_key):
-   data = []
+   cleaned_file_name = target_key + str(time.time())+'.txt'
    s3_client = boto3.client('s3')
    read_object = s3_client.get_object(
      Bucket = target_bucket,
@@ -78,4 +78,5 @@ class ingester():
    )
    read_byte_object = BytesIO(read_object['Body'].read()) 
    raw_data = gzip.GzipFile(None, 'rb', fileobj=read_byte_object).read().decode('ASCII') #.decode('utf-8')
-   s3_client.put_object(Body=raw_data, Bucket=target_bucket,Key=target_key[target_key.rindex('/')+1:] + str(time.time())+'.txt')
+   s3_client.put_object(Body=raw_data, Bucket=target_bucket,Key=cleaned_file_name)
+   return cleaned_file_name
